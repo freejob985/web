@@ -1,0 +1,4 @@
+﻿name,description,price,original_price,stock,sku,barcode,image,category_id,subcategory_id,brand_id,origin,weight,unit,is_fresh,is_featured,is_active,status,rating,reviews_count,sales_count,vendor_id,governorate_id,city_id,nutritional_info,expiry_date
+"تفاح أحمر","تفاح أحمر طازج من المزارع المحلية",2.500,3.000,100,APPLE-001,8901234567890,,1,1,1,الكويت,1.0,كيلو,1,0,1,approved,4.5,10,25,1,1,1,"سعرات حرارية: 52",2024-12-31
+برتقال,"برتقال طازج غني بفيتامين سي",1.750,2.000,150,ORANGE-001,8901234567891,,فواكه,حمضيات,"مزارع الخليج",الكويت,2.0,كيلو,true,true,yes,approved,4.8,15,40,1,1,1,"فيتامين سي: 53 ملغ",2024-11-30
+"حليب كامل الدسم","حليب طازج كامل الدسم",1.200,,200,MILK-001,8901234567892,,2,"ألبان طازجة",2,الكويت,1.0,لتر,1,0,1,approved,4.2,8,60,1,1,1,"بروتين: 3.4g",2024-10-15

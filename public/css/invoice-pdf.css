@@ -1,0 +1,215 @@
+/* Arabic PDF Invoice Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+
+* {
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+    direction: rtl;
+    unicode-bidi: embed;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: embed;
+    font-feature-settings: "liga" 1, "calt" 1;
+    line-height: 1.6;
+    color: #333;
+}
+
+.invoice-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2563eb;
+    margin-bottom: 10px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.invoice-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.invoice-number {
+    font-size: 18px;
+    color: #6b7280;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.order-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.info-section h3 {
+    color: #1f2937;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.info-item {
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #374151;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.items-table th,
+.items-table td {
+    padding: 12px;
+    text-align: right;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.items-table th {
+    background-color: #f9fafb;
+    font-weight: bold;
+    color: #374151;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.items-table tr:hover {
+    background-color: #f9fafb;
+}
+
+.total-section {
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.total-row.final {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1f2937;
+    border-top: 2px solid #e5e7eb;
+    padding-top: 15px;
+    margin-top: 15px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-shipped {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-delivered {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 14px;
+    font-family: 'Cairo', 'Tajawal', 'Arial', sans-serif;
+}
+
+/* RTL specific styles */
+[dir="rtl"] {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] .items-table th,
+[dir="rtl"] .items-table td {
+    text-align: right;
+}
+
+[dir="rtl"] .total-row {
+    flex-direction: row-reverse;
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .invoice-container {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 20px;
+    }
+    
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+}

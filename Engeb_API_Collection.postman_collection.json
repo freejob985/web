@@ -1,0 +1,1603 @@
+{
+    "info": {
+        "_postman_id": "engeb-api-collection-2024",
+        "name": "Engeb API Collection - Complete",
+        "description": "مجموعة كاملة لجميع API endpoints الخاصة بمشروع Engeb مع بيانات تجريبية شاملة - محدثة",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "vendor_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth - المصادقة",
+            "item": [
+                {
+                    "name": "Register - تسجيل مستخدم جديد",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.token) {",
+                                    "        pm.collectionVariables.set('auth_token', jsonData.token);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"أحمد محمد\",\n    \"family_name\": \"السيد\",\n    \"email\": \"ahmed@example.com\",\n    \"password\": \"123456\",\n    \"phone\": \"01012345678\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login - تسجيل الدخول",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.token) {",
+                                    "        pm.collectionVariables.set('auth_token', jsonData.token);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"ahmed@example.com\",\n    \"password\": \"123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Current User - بيانات المستخدم الحالي",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Profile - تحديث الملف الشخصي",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"أحمد محمد المحدث\",\n    \"phone\": \"01098765432\",\n    \"birth_date\": \"1990-01-01\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/profile",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "profile"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout - تسجيل الخروج",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Products - المنتجات",
+            "item": [
+                {
+                    "name": "Get Featured Products - المنتجات المميزة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/products/featured",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "products",
+                                "featured"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Fresh Products - المنتجات الجديدة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/products/fresh?page=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "products",
+                                "fresh"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Products with Offers - عروض المنتجات",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/products/offers?page=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "products",
+                                "offers"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Product Details - تفاصيل المنتج",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/products/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "products",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Categories - الفئات",
+            "item": [
+                {
+                    "name": "Get All Categories - جميع الفئات",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/categories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Main Categories - الفئات الرئيسية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/categories/main",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "main"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Supermarket Categories - فئات السوبر ماركت",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/categories/supermarket",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "supermarket"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Category Details - تفاصيل الفئة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/categories/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Category Subcategories - الفئات الفرعية للفئة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/categories/1/subcategories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "1",
+                                "subcategories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Category Products - منتجات الفئة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/categories/1/products?page=1&per_page=12",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "1",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "12"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Subcategories - الفئات الفرعية",
+            "item": [
+                {
+                    "name": "Get All Subcategories - جميع الفئات الفرعية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/subcategories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "subcategories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Subcategory Details - تفاصيل الفئة الفرعية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/subcategories/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "subcategories",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Brands - العلامات التجارية",
+            "item": [
+                {
+                    "name": "Get All Brands - جميع العلامات التجارية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/brands",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "brands"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Brand Details - تفاصيل العلامة التجارية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/brands/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "brands",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Brand Products - منتجات العلامة التجارية",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/brands/1/products?page=1&per_page=12",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "brands",
+                                "1",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "12"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Offers - العروض والخصومات",
+            "item": [
+                {
+                    "name": "Get All Offers - جميع العروض",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offers?page=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offers"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Featured Offers - العروض المميزة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offers/featured",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offers",
+                                "featured"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Flash Sale Offers - عروض الفلاش سيل",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offers/flash-sale",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offers",
+                                "flash-sale"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Offers - البحث في العروض",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offers/search?q=خصم",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offers",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "خصم"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Offer Details - تفاصيل العرض",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offers/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offers",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Offers by Category - عروض حسب الفئة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offers/category/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offers",
+                                "category",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Offer Categories - فئات العروض",
+            "item": [
+                {
+                    "name": "Get All Offer Categories - جميع فئات العروض",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offer-categories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offer-categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Offer Category Details - تفاصيل فئة العروض",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offer-categories/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offer-categories",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Offers in Category - العروض في الفئة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/offer-categories/1/offers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "offer-categories",
+                                "1",
+                                "offers"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Vendors - البائعين",
+            "item": [
+                {
+                    "name": "Get All Vendors - جميع البائعين",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/vendors?page=1&per_page=12",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendors"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "12"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Featured Vendors - البائعين المميزين",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/vendors/featured",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendors",
+                                "featured"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Vendor Details - تفاصيل البائع",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/vendors/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendors",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Vendor Products - منتجات البائع",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/vendors/1/products?page=1&per_page=12",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendors",
+                                "1",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "12"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Cart - السلة",
+            "item": [
+                {
+                    "name": "Get Cart - عرض السلة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/cart",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Cart Count - عدد المنتجات في السلة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/cart/count",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "count"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add to Cart - إضافة منتج للسلة",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"product_id\": 1,\n    \"quantity\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/cart",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Cart Item - تحديث كمية المنتج",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantity\": 5\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/cart/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Remove from Cart - حذف منتج من السلة",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/cart/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Clear Cart - إفراغ السلة",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/cart",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Apply Coupon - تطبيق كوبون خصم",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"SAVE20\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/cart/coupon/apply",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "coupon",
+                                "apply"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Remove Coupon - إزالة الكوبون",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/cart/coupon/remove",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "coupon",
+                                "remove"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Checkout & Orders - الطلبات",
+            "item": [
+                {
+                    "name": "Get Checkout Data - بيانات صفحة الدفع",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/checkout/data",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "checkout",
+                                "data"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Complete Checkout - إتمام الطلب",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"أحمد محمد\",\n    \"phone\": \"01012345678\",\n    \"email\": \"ahmed@example.com\",\n    \"governorate\": \"القاهرة\",\n    \"city\": \"مدينة نصر\",\n    \"address\": \"شارع مصطفى النحاس، مدينة نصر\",\n    \"payment_method\": \"cash_on_delivery\",\n    \"notes\": \"يرجى الاتصال قبل التوصيل\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/checkout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "checkout"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Recent Orders - الطلبات الأخيرة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/recent",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "recent"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Track Order - تتبع الطلب",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/track/ORD-2024-001",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "track",
+                                "ORD-2024-001"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Order Confirmation - تأكيد الطلب",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/confirmation/ORD-2024-001",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "confirmation",
+                                "ORD-2024-001"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Order Details - تفاصيل الطلب",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/orders/1/details",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "1",
+                                "details"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Vendor Auth - مصادقة البائع",
+            "item": [
+                {
+                    "name": "Vendor Register - تسجيل بائع جديد",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.token) {",
+                                    "        pm.collectionVariables.set('vendor_token', jsonData.token);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"store_name\": \"متجر الإلكترونيات الحديثة\",\n    \"owner_name\": \"محمد أحمد\",\n    \"email\": \"vendor@example.com\",\n    \"password\": \"123456\",\n    \"phone\": \"01012345678\",\n    \"business_category_id\": 1,\n    \"governorate_id\": 1,\n    \"city_id\": 1,\n    \"address\": \"شارع التحرير، وسط البلد\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/vendor/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Vendor Login - تسجيل دخول البائع",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.token) {",
+                                    "        pm.collectionVariables.set('vendor_token', jsonData.token);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"vendor@example.com\",\n    \"password\": \"123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/vendor/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Vendor Get Profile - بيانات البائع",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{vendor_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vendor/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Vendor Dashboard - لوحة تحكم البائع",
+            "item": [
+                {
+                    "name": "Get Dashboard Stats - إحصائيات البائع",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{vendor_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vendor/dashboard/stats",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "dashboard",
+                                "stats"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Recent Orders - الطلبات الأخيرة",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{vendor_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vendor/dashboard/recent-orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "dashboard",
+                                "recent-orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Vendor Products - منتجات البائع",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{vendor_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vendor/products",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "products"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add New Product - إضافة منتج جديد",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{vendor_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"هاتف ذكي جديد\",\n    \"description\": \"أحدث إصدار من الهواتف الذكية\",\n    \"price\": 5000,\n    \"original_price\": 6000,\n    \"category_id\": 1,\n    \"subcategory_id\": 1,\n    \"brand_id\": 1,\n    \"stock_quantity\": 50,\n    \"barcode\": \"1234567890123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/vendor/products",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vendor",
+                                "products"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Search - البحث",
+            "item": [
+                {
+                    "name": "Search Products - البحث عن المنتجات",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/search/products?q=هاتف&category_id=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "search",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "هاتف"
+                                },
+                                {
+                                    "key": "category_id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Autocomplete Search - البحث التلقائي",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/search/autocomplete?q=هات",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "search",
+                                "autocomplete"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "هات"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Wishlist - المفضلة",
+            "item": [
+                {
+                    "name": "Get Wishlist - عرض المفضلة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/wishlist",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "wishlist"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add to Wishlist - إضافة للمفضلة",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"product_id\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/wishlist",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "wishlist"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Remove from Wishlist - حذف من المفضلة",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/wishlist/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "wishlist",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Locations - المواقع",
+            "item": [
+                {
+                    "name": "Get All Governorates - جميع المحافظات",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/governorates",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "governorates"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Governorate Cities - مدن المحافظة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/governorates/1/cities",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "governorates",
+                                "1",
+                                "cities"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Cities - جميع المدن",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/cities",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "cities"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reviews - التقييمات",
+            "item": [
+                {
+                    "name": "Get Product Reviews - تقييمات المنتج",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/products/1/reviews",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "products",
+                                "1",
+                                "reviews"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Product Review - إضافة تقييم للمنتج",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"product_id\": 1,\n    \"rating\": 5,\n    \"comment\": \"منتج ممتاز وجودة عالية\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/reviews/products",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reviews",
+                                "products"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Salla Delivery Chat - محادثة التوصيل",
+            "item": [
+                {
+                    "name": "Send Message - إرسال رسالة",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"sender_type\": \"customer\",\n    \"message\": \"متى سيصل الطلب؟\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/salla-delivery/chat/send/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salla-delivery",
+                                "chat",
+                                "send",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Messages - عرض الرسائل",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salla-delivery/chat/messages/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salla-delivery",
+                                "chat",
+                                "messages",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Unread Count - عدد الرسائل غير المقروءة",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salla-delivery/chat/unread-count/1/customer",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salla-delivery",
+                                "chat",
+                                "unread-count",
+                                "1",
+                                "customer"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Utility - أدوات مساعدة",
+            "item": [
+                {
+                    "name": "Ping - فحص الاتصال",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/ping",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "ping"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Demo Seed - بيانات تجريبية",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/demo/seed",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "demo",
+                                "seed"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

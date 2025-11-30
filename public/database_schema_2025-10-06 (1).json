@@ -1,0 +1,2913 @@
+{
+  "success": true,
+  "driver": "sqlite",
+  "tables": [
+    {
+      "name": "migrations",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "migration",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "batch",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email_verified_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "password",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "phone",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "birth_date",
+          "type": "date",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "avatar",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "gender",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "preferences",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email_notifications",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sms_notifications",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "order_updates",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "promotions",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "newsletter",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "total_spent",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "orders_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "last_order_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "remember_token",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "user_addresses",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "address",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "city",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "governorate",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "block",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "street",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "building",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "floor",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "apartment",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "phone",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "notes",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_default",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "latitude",
+          "type": "numeric",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "longitude",
+          "type": "numeric",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "order_number",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "vendor_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'pending'",
+          "pk": false
+        },
+        {
+          "name": "subtotal",
+          "type": "numeric",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_fee",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "tax_amount",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "discount_amount",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "total_amount",
+          "type": "numeric",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "currency",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'KWD'",
+          "pk": false
+        },
+        {
+          "name": "delivery_address",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_city",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_governorate",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_phone",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_notes",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_type",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'fast'",
+          "pk": false
+        },
+        {
+          "name": "requested_delivery_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "estimated_delivery_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivered_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "payment_method",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'cash'",
+          "pk": false
+        },
+        {
+          "name": "payment_status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'pending'",
+          "pk": false
+        },
+        {
+          "name": "payment_reference",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "paid_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "notes",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "cancellation_reason",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "cancelled_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "rating",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "review",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "reviewed_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "order_items",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "product_name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "product_sku",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "product_image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "unit_price",
+          "type": "numeric",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "total_price",
+          "type": "numeric",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "notes",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "cart",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "notes",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "wishlist",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "admins",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email_verified_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "password",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "role",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'admin'",
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "remember_token",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "cache",
+      "columns": [
+        {
+          "name": "key",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "value",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "expiration",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "cache_locks",
+      "columns": [
+        {
+          "name": "key",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "owner",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "expiration",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "categories",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name_en",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "slug",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description_ar",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description_en",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "icon",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "subcategories",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name_en",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "slug",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description_ar",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description_en",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "icon",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "category_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "governorates",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name_en",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "code",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "cities",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name_en",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "code",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "governorate_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "brands",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "slug",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "logo",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "contact_messages",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "phone",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "subject",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "message",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'new'",
+          "pk": false
+        },
+        {
+          "name": "admin_notes",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "read_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "replied_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "user_agent",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "price",
+          "type": "numeric",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "original_price",
+          "type": "numeric",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "stock",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "sku",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "images",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "origin",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'الكويت'",
+          "pk": false
+        },
+        {
+          "name": "weight",
+          "type": "numeric",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "unit",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'كيلو'",
+          "pk": false
+        },
+        {
+          "name": "is_fresh",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "is_featured",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "rating",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "reviews_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "sales_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "vendor_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "nutritional_info",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "expiry_date",
+          "type": "date",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "category_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "subcategory_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "governorate_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "city_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "brand_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "notifications",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "type",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "message",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "data",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_read",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "read_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "icon",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "color",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'info'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "faqs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "question_ar",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "answer_ar",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "category",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'general'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "coupons",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "code",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "discount_type",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'fixed'",
+          "pk": false
+        },
+        {
+          "name": "discount_value",
+          "type": "numeric",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "minimum_amount",
+          "type": "numeric",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "maximum_discount",
+          "type": "numeric",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "usage_limit_type",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'unlimited'",
+          "pk": false
+        },
+        {
+          "name": "usage_limit",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "used_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "applicable_type",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'all_products'",
+          "pk": false
+        },
+        {
+          "name": "applicable_products",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "applicable_categories",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'active'",
+          "pk": false
+        },
+        {
+          "name": "starts_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "expires_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "newsletters",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'active'",
+          "pk": false
+        },
+        {
+          "name": "subscribed_at",
+          "type": "datetime",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "pk": false
+        },
+        {
+          "name": "unsubscribed_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "newsletter_campaigns",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "subject",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "content",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "html_content",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'draft'",
+          "pk": false
+        },
+        {
+          "name": "total_recipients",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "sent_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "failed_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "scheduled_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "sent_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "newsletter_logs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "campaign_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "newsletter_id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'sent'",
+          "pk": false
+        },
+        {
+          "name": "error_message",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "sent_at",
+          "type": "datetime",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "key",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "value",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "type",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'string'",
+          "pk": false
+        },
+        {
+          "name": "group",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'general'",
+          "pk": false
+        },
+        {
+          "name": "label",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "options",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_public",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "support_channels",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "title_ar",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "title_en",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description_ar",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description_en",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "contact_info",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "availability",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "icon",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "color",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'#3B82F6'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "about_pages",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "section",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "content",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "meta_title",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "meta_description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "meta_keywords",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "extra_data",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "sliders",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "subtitle",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "button_text",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "button_url",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "background_image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "badge",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "gradient_color",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "static_pages",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "slug",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "content",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "meta_description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "meta_keywords",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "is_fixed",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "business_categories",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "slug",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "icon",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "vendors",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "email_verified_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "password",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "phone",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "commercial_record",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "address",
+          "type": "TEXT",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "city",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "governorate",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "postal_code",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "business_categories",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "business_description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "logo",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "cover_image",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "rating",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "reviews_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "orders_count",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "total_sales",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "notnull": true,
+          "default": "'pending'",
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "business_hours",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_areas",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "delivery_fee",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "free_delivery_threshold",
+          "type": "numeric",
+          "notnull": true,
+          "default": "'10'",
+          "pk": false
+        },
+        {
+          "name": "remember_token",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "governorate_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "city_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_featured",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "is_fresh",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "category",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "name_ar",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "business_name",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "business_type",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "tax_number",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "bank_account",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "bank_name",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "business_category_id",
+          "type": "INTEGER",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    },
+    {
+      "name": "contact_methods",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": null,
+          "pk": true
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "icon",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "value",
+          "type": "varchar",
+          "notnull": true,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "link",
+          "type": "varchar",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "notnull": true,
+          "default": "'1'",
+          "pk": false
+        },
+        {
+          "name": "sort_order",
+          "type": "INTEGER",
+          "notnull": true,
+          "default": "'0'",
+          "pk": false
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "notnull": false,
+          "default": null,
+          "pk": false
+        }
+      ]
+    }
+  ],
+  "count": 31
+}

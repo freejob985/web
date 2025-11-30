@@ -1,0 +1,267 @@
+{
+    "info": {
+        "name": "Salla Delivery Chat - Firebase Notifications",
+        "description": "مجموعة API endpoints لنظام الشات مع إشعارات Firebase",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "https://0d2c7ff974.nxcli.io/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "order_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "message_id",
+            "value": "1",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "1. إرسال رسالة من المستخدم للسائق",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"message\": \"مرحباً، متى ستصل؟\",\n  \"sender_type\": \"user\",\n  \"sender_id\": 1\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/send/{{order_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "send",
+                        "{{order_id}}"
+                    ]
+                },
+                "description": "إرسال رسالة من المستخدم للسائق - سيستلم السائق إشعار Firebase تلقائياً"
+            }
+        },
+        {
+            "name": "2. إرسال رسالة من السائق للمستخدم",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"message\": \"سأصل خلال 10 دقائق إن شاء الله\",\n  \"sender_type\": \"driver\",\n  \"sender_id\": 1\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/send/{{order_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "send",
+                        "{{order_id}}"
+                    ]
+                },
+                "description": "إرسال رسالة من السائق للمستخدم - سيستلم المستخدم إشعار Firebase تلقائياً"
+            }
+        },
+        {
+            "name": "3. إرسال رسالة مع مرفق",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "message",
+                            "value": "هذا موقعي الحالي",
+                            "type": "text"
+                        },
+                        {
+                            "key": "sender_type",
+                            "value": "driver",
+                            "type": "text"
+                        },
+                        {
+                            "key": "sender_id",
+                            "value": "1",
+                            "type": "text"
+                        },
+                        {
+                            "key": "attachment",
+                            "type": "file",
+                            "src": "/path/to/your/file.jpg"
+                        }
+                    ]
+                },
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/send/{{order_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "send",
+                        "{{order_id}}"
+                    ]
+                },
+                "description": "إرسال رسالة مع مرفق (صورة أو ملف)"
+            }
+        },
+        {
+            "name": "4. الحصول على جميع رسائل الطلب",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/messages/{{order_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "messages",
+                        "{{order_id}}"
+                    ]
+                },
+                "description": "الحصول على جميع الرسائل الخاصة بطلب معين"
+            }
+        },
+        {
+            "name": "5. تحديد الرسالة كمقروءة",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/mark-read/{{message_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "mark-read",
+                        "{{message_id}}"
+                    ]
+                },
+                "description": "تحديد رسالة معينة كمقروءة"
+            }
+        },
+        {
+            "name": "6. عدد الرسائل غير المقروءة للسائق",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/unread-count/{{order_id}}/driver",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "unread-count",
+                        "{{order_id}}",
+                        "driver"
+                    ]
+                },
+                "description": "الحصول على عدد الرسائل غير المقروءة للسائق"
+            }
+        },
+        {
+            "name": "7. عدد الرسائل غير المقروءة للمستخدم",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/unread-count/{{order_id}}/user",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "unread-count",
+                        "{{order_id}}",
+                        "user"
+                    ]
+                },
+                "description": "الحصول على عدد الرسائل غير المقروءة للمستخدم"
+            }
+        },
+        {
+            "name": "8. تحديث Firebase Token للمستخدم",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"user_type\": \"user\",\n  \"user_id\": 1,\n  \"fcm_token\": \"firebase_token_example_123456789\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/update-fcm-token",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "update-fcm-token"
+                    ]
+                },
+                "description": "تحديث Firebase Token للمستخدم"
+            }
+        },
+        {
+            "name": "9. تحديث Firebase Token للسائق",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"user_type\": \"driver\",\n  \"user_id\": 1,\n  \"fcm_token\": \"firebase_token_driver_example_987654321\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/salla-delivery/chat/update-fcm-token",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "salla-delivery",
+                        "chat",
+                        "update-fcm-token"
+                    ]
+                },
+                "description": "تحديث Firebase Token للسائق"
+            }
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+/* Arabic Font Support for DomPDF */
+@font-face {
+    font-family: 'ArabicFont';
+    src: url('data:font/truetype;charset=utf-8;base64,') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+}

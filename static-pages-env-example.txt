@@ -1,0 +1,48 @@
+# إعدادات نظام الصفحات الثابتة
+# انسخ هذا الملف إلى .env وأضف هذه الإعدادات
+
+# إعدادات قاعدة البيانات
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+
+# إعدادات التطبيق
+APP_NAME="إنجب - نظام الصفحات الثابتة"
+APP_ENV=local
+APP_KEY=base64:your-app-key-here
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# إعدادات Frontend
+VITE_API_BASE_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8000/api/v1
+VITE_APP_URL=http://localhost:5174
+
+# إعدادات البريد الإلكتروني
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=your-email@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+# إعدادات الجلسة
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+
+# إعدادات Cache
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+
+# إعدادات الصفحات الثابتة
+STATIC_PAGES_CACHE_TTL=3600
+STATIC_PAGES_ENABLE_CACHE=true
+STATIC_PAGES_DEFAULT_SORT_ORDER=0
+
+# إعدادات الأمان
+SANCTUM_STATEFUL_DOMAINS=localhost:5174,localhost:3000
+SESSION_DOMAIN=localhost

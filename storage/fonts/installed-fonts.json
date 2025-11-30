@@ -1,0 +1,20 @@
+{
+    "Cairo": {
+        "normal": "Cairo-Regular",
+        "bold": "Cairo-Bold",
+        "italic": "Cairo-Regular",
+        "bold_italic": "Cairo-Bold"
+    },
+    "Tajawal": {
+        "normal": "Tajawal-Regular",
+        "bold": "Tajawal-Bold",
+        "italic": "Tajawal-Regular",
+        "bold_italic": "Tajawal-Bold"
+    },
+    "Arial": {
+        "normal": "Arial",
+        "bold": "Arial-Bold",
+        "italic": "Arial-Italic",
+        "bold_italic": "Arial-BoldItalic"
+    }
+}
