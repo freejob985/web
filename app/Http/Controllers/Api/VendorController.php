@@ -231,7 +231,17 @@ class VendorController extends Controller
 
     public function products(Request $request, $id)
     {
-        $vendor = Vendor::where('is_active', true)->findOrFail($id);
+        // Handle both ID and find vendor - use first() instead of findOrFail() to handle gracefully
+        $vendor = Vendor::where('is_active', true)->find($id);
+        
+        // If vendor not found, return 404 with proper error message
+        if (!$vendor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'المورد المطلوب غير موجود.',
+                'error' => 'Vendor not found'
+            ], 404);
+        }
 
         \Log::info("🏪 [Vendor Products API] جلب منتجات المتجر #{$id} ({$vendor->name_ar})");
         
@@ -311,34 +321,10 @@ class VendorController extends Controller
         
         \Log::info("✅ [Vendor Products API] تم جلب {$products->count()} منتج من أصل {$products->total()}");
 
-        // Transform products
+        // Transform products using appendImageUrls() method
         $products->getCollection()->transform(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'price' => (float) $product->price,
-                'original_price' => $product->original_price ? (float) $product->original_price : null,
-                'discount_percentage' => $product->discount_percentage,
-                'is_on_sale' => $product->is_on_sale,
-                'is_featured' => $product->is_featured,
-                'is_fresh' => $product->is_fresh,
-                'stock' => $product->stock,
-                'rating' => $product->rating,
-                'sales_count' => $product->sales_count,
-                'images' => $product->getImages(),
-                'main_image' => $product->getMainImage(),
-                'brand' => $product->brand ? [
-                    'id' => $product->brand->id,
-                    'name' => $product->brand->name
-                ] : null,
-                'category' => $product->category ? [
-                    'id' => $product->category->id,
-                    'name' => $product->category->name
-                ] : null,
-                'created_at' => $product->created_at->toDateTimeString(),
-                'updated_at' => $product->updated_at->toDateTimeString()
-            ];
+            $product->appendImageUrls();
+            return $product;
         });
 
         // معالجة آمنة لأسماء المتجر
@@ -360,7 +346,6 @@ class VendorController extends Controller
         
         return response()->json([
             'success' => true,
-            'data' => $products->items(), // للتوافق مع api_service.dart
             'vendor' => [
                 'id' => $vendor->id,
                 'name' => $vendorName,
@@ -369,21 +354,26 @@ class VendorController extends Controller
                 'description' => $vendor->description,
                 'logo' => $vendor->logo_url,
                 'rating' => $vendor->rating ?? 4.5,
+                'products_count' => $vendor->products()->where('is_active', true)->count(),
+                'orders_count' => $vendor->orders_count ?? 0,
+                'reviews_count' => $vendor->reviews_count ?? 0,
                 'is_featured' => $vendor->is_featured,
                 'is_fresh' => $vendor->is_fresh ?? false,
                 'category' => is_object($vendor->category) ? $vendor->category->name : ($vendor->category ?? 'عام'),
-                'city' => is_object($vendor->city) ? $vendor->city->name : ($vendor->city ?? 'غير محدد'),
-                'governorate' => is_object($vendor->governorate) ? $vendor->governorate->name : ($vendor->governorate ?? 'غير محدد'),
+                'city' => is_object($vendor->city) ? $vendor->city->name_ar : ($vendor->city ?? 'غير محدد'),
+                'governorate' => is_object($vendor->governorate) ? $vendor->governorate->name_ar : ($vendor->governorate ?? 'غير محدد'),
                 'phone' => $vendor->phone,
                 'email' => $vendor->email,
                 'address' => $vendor->address
             ],
-            'products' => $products->items(),
-            'meta' => [
-                'total' => $products->total(),
-                'per_page' => $products->perPage(),
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage()
+            'products' => [
+                'data' => $products->items(),
+                'meta' => [
+                    'total' => $products->total(),
+                    'per_page' => $products->perPage(),
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage()
+                ]
             ],
             'filters' => [
                 'categories' => $vendor->products()
