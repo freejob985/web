@@ -196,22 +196,35 @@ class CategoryController extends Controller
 
     /**
      * Get products for a specific category.
+     * 
+     * @param Request $request
+     * @param Category|string|int $category - Can be Category model (from route binding), slug string, or ID
      */
     public function products(Request $request, $category)
     {
-        // Support both ID and slug
-        if (is_numeric($category)) {
-            $categoryModel = Category::findOrFail($category);
+        // Handle different input types: Category model, slug string, or ID
+        if ($category instanceof Category) {
+            // Route model binding found the category
+            $categoryModel = $category;
+        } elseif (is_numeric($category)) {
+            // Category is an ID
+            $categoryModel = Category::find($category);
         } else {
-            $categoryModel = Category::where('slug', $category)
-                ->orWhere('id', $category)
-                ->firstOrFail();
+            // Category is a slug string
+            $categoryModel = Category::where('slug', $category)->first();
+        }
+        
+        // If category not found, return 404 with proper error message
+        if (!$categoryModel) {
+            return response()->json([
+                'message' => 'المورد المطلوب غير موجود.',
+                'error' => 'Category not found'
+            ], 404);
         }
         
         $query = $categoryModel->products()
             ->with(['vendor', 'brand'])
-            ->active()
-            ->inStock();
+            ->active();
 
         // Apply filters
         if ($request->filled('brand_id')) {
@@ -240,13 +253,12 @@ class CategoryController extends Controller
         }
 
         // Apply sorting - handle both 'sort' and 'sort_by' parameters
-        $sortBy = $request->get('sort', $request->get('sort_by', 'created_at'));
+        $sortBy = $request->get('sort', $request->get('sort_by', 'popular'));
         $sortOrder = $request->get('sort_order', 'desc');
 
         switch ($sortBy) {
             case 'popular':
-            case 'created_at':
-                $query->orderBy('created_at', 'desc');
+                $query->orderBy('sales_count', 'desc')->orderBy('rating', 'desc');
                 break;
             case 'price-asc':
             case 'price_asc':
@@ -270,78 +282,35 @@ class CategoryController extends Controller
             case 'sales':
                 $query->orderBy('sales_count', 'desc');
                 break;
+            case 'newest':
+            case 'created_at':
             default:
                 $query->orderBy('created_at', 'desc');
         }
 
-        $perPage = $request->get('per_page', 20);
-        $products = $query->paginate($perPage);
+        $perPage = (int) $request->get('per_page', 12);
+        $products = $query->paginate($perPage)->withQueryString();
 
-        // Transform products
+        // Transform image URLs using the same method as CatalogController
         $products->getCollection()->transform(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'price' => (float) $product->price,
-                'original_price' => $product->original_price ? (float) $product->original_price : null,
-                'discount_percentage' => $product->discount_percentage,
-                'is_on_sale' => $product->is_on_sale,
-                'is_featured' => $product->is_featured,
-                'is_fresh' => $product->is_fresh,
-                'stock' => $product->stock,
-                'rating' => $product->rating,
-                'sales_count' => $product->sales_count,
-                'images' => $product->getImages(),
-                'main_image' => $product->getMainImage(),
-                'vendor' => $product->vendor ? [
-                    'id' => $product->vendor->id,
-                    'name' => $product->vendor->name,
-                    'rating' => $product->vendor->rating
-                ] : null,
-                'brand' => $product->brand ? [
-                    'id' => $product->brand->id,
-                    'name' => $product->brand->name
-                ] : null,
-                'created_at' => $product->created_at->toDateTimeString(),
-                'updated_at' => $product->updated_at->toDateTimeString()
-            ];
+            return $product->appendImageUrls();
         });
 
+        // Return response in the format expected by frontend
         return response()->json([
-            'success' => true,
             'category' => [
-                'id' => $categoryModel->id,
-                'name' => $categoryModel->name_ar,
-                'name_ar' => $categoryModel->name_ar,
-                'name_en' => $categoryModel->name_en,
-                'description' => $categoryModel->description_ar,
-                'description_ar' => $categoryModel->description_ar,
-                'description_en' => $categoryModel->description_en,
                 'slug' => $categoryModel->slug,
-                'image' => $categoryModel->image_url
+                'name' => $categoryModel->name_ar,
             ],
-            'products' => $products,
-            'filters' => [
-                'brands' => $categoryModel->products()
-                    ->active()
-                    ->with('brand')
-                    ->get()
-                    ->pluck('brand')
-                    ->filter()
-                    ->unique('id')
-                    ->values()
-                    ->map(function ($brand) {
-                        return [
-                            'id' => $brand->id,
-                            'name' => $brand->name
-                        ];
-                    }),
-                'price_range' => [
-                    'min' => $categoryModel->products()->active()->min('price'),
-                    'max' => $categoryModel->products()->active()->max('price')
-                ]
-            ]
+            'data' => $products->items(),
+            'meta' => [
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+            ],
         ]);
     }
 }
+
+

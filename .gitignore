@@ -40,3 +40,5 @@ storage/logs/laravel.log
 storage/logs/laravel.log
 
 sync_config.jsonc
+bootstrap/cache/routes-v7.php
+tests/Feature/CategoryProductsTest.php

@@ -29,13 +29,13 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         // Configure route model binding for categories to use slug or id
-        Route::model('category', \App\Models\Category::class);
+        // Note: We use first() instead of firstOrFail() to allow controller to handle 404 gracefully
         Route::bind('category', function ($value) {
             // If value is numeric, find by id, otherwise by slug
             if (is_numeric($value)) {
-                return \App\Models\Category::findOrFail($value);
+                return \App\Models\Category::find($value);
             }
-            return \App\Models\Category::where('slug', $value)->firstOrFail();
+            return \App\Models\Category::where('slug', $value)->first();
         });
 
         $this->routes(function () {

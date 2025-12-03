@@ -146,7 +146,15 @@ class Product extends Model
 
     public function scopeByCategory($query, $category)
     {
-        return $query->where('category', $category);
+        // Support both category slug and category ID
+        if (is_numeric($category)) {
+            return $query->where('category_id', $category);
+        }
+        
+        // If it's a slug, join with categories table and filter by slug
+        return $query->whereHas('category', function ($q) use ($category) {
+            $q->where('slug', $category);
+        });
     }
 
     public function scopeByVendor($query, $vendorId)
