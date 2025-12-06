@@ -18,26 +18,26 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy Admin Files via SFTP
-        uses: Dylan700/sftp-upload-action@latest
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          uploads: |
-            ./admin/ => /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd/
-          delete: false
+          local_path: './admin/*'
+          remote_path: '/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd'
+          sftp_only: true
 
       - name: Deploy API Files via SFTP
-        uses: Dylan700/sftp-upload-action@latest
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          uploads: |
-            ./api/ => /home/u929533639/domains/eliteonegrocery.com/public_html/ad/
-          delete: false
+          local_path: './api/*'
+          remote_path: '/home/u929533639/domains/eliteonegrocery.com/public_html/ad'
+          sftp_only: true
 
       - name: Run Database Migrations & Seeders
         uses: appleboy/ssh-action@master
