@@ -152,3 +152,4 @@ class Offer extends Model
         return $this->is_active;
     }
 }
+
