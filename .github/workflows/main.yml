@@ -1,4 +1,4 @@
-name: Deploy Admin & API (full overwrite)
+name: Deploy Admin & API (changed files only, same paths)
 
 on:
   push:
@@ -7,10 +7,6 @@ on:
   workflow_dispatch:
 
 env:
-  # جذر المشروع في الريبو
-  LOCAL_PATH: .
-
-  # مسارات المشروعين على السيرفر
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
   API_REMOTE_PATH:   /home/u929533639/domains/eliteonegrocery.com/public_html/ad
 
@@ -22,12 +18,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Debug – list repo root
-        run: |
-          echo "Repo root:"
-          pwd
-          ls -la
+        with:
+          fetch-depth: 2   # عشان نقدر نقارن مع الكوميت اللي قبله
 
       - name: Validate required secrets
         env:
@@ -38,49 +30,93 @@ jobs:
         run: |
           for var in HOST USER PASS PORT; do
             if [ -z "${!var}" ]; then
-              echo "::error file=.github/workflows/deploy.yml,line=30::Secret $var is empty or missing."
+              echo "::error file=.github/workflows/deploy.yml,line=25::Secret $var is empty or missing."
               exit 1
             fi
           done
           echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      # ⬆️ نشر المشروع كاملًا إلى adminxd (تحديث مباشر للملفات)
-      - name: Deploy project to Admin (adminxd)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      # 🧠 استخراج قائمة الملفات المتغيرة وتحويلها لقائمة مناسبة للـ scp
+      - name: Detect changed files and build source list
+        run: |
+          set -e
+
+          echo "🔍 Detecting changed files..."
+
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            CHANGED_FILES_RAW=$(git diff --name-only HEAD^ HEAD || echo "")
+          else
+            # أول كوميت على الفرع → اعتبر كل الملفات متغيّرة
+            CHANGED_FILES_RAW=$(git ls-files)
+          fi
+
+          echo "Changed files (raw):"
+          echo "$CHANGED_FILES_RAW"
+
+          CHANGED_LIST=""
+          COUNT=0
+
+          for file in $CHANGED_FILES_RAW; do
+            [ -z "$file" ] && continue
+
+            # استبعاد أشياء مش عايزين نرفعها
+            case "$file" in
+              .git/*|.github/*|node_modules/*|vendor/*|storage/logs/*)
+                continue
+                ;;
+            esac
+
+            if [ -f "$file" ]; then
+              if [ -z "$CHANGED_LIST" ]; then
+                CHANGED_LIST="$file"
+              else
+                CHANGED_LIST="$CHANGED_LIST,$file"
+              fi
+              COUNT=$((COUNT+1))
+            fi
+          done
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "ℹ️ No changed files to deploy."
+            echo "HAS_CHANGES=false" >> $GITHUB_ENV
+          else
+            echo "✅ Total changed files: $COUNT"
+            echo "CHANGED_FILES=$CHANGED_LIST" >> $GITHUB_ENV
+            echo "HAS_CHANGES=true" >> $GITHUB_ENV
+            echo "Final CHANGED_FILES list (for scp):"
+            echo "$CHANGED_LIST"
+          fi
+
+      # ⬆️ نسخ نفس الملفات المتغيرة إلى مسار adminxd (بنفس المسارات)
+      - name: Copy changed files to Admin (adminxd)
+        if: env.HAS_CHANGES == 'true'
+        uses: appleboy/scp-action@v1
         with:
-          server:   ${{ secrets.SFTP_HOST }}
+          host:     ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          local_path:  '${{ env.LOCAL_PATH }}'
-          remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
-          sftp_only: true
-          exclude: |
-            .git*
-            .github*
-            node_modules
-            storage/logs
+          source:   '${{ env.CHANGED_FILES }}'
+          target:   '${{ env.ADMIN_REMOTE_PATH }}'
+          overwrite: true
 
-      # ⬆️ نشر نفس المشروع كاملًا إلى ad
-      - name: Deploy project to API (ad)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      # ⬆️ نسخ نفس الملفات المتغيرة إلى مسار ad (بنفس المسارات)
+      - name: Copy changed files to API (ad)
+        if: env.HAS_CHANGES == 'true'
+        uses: appleboy/scp-action@v1
         with:
-          server:   ${{ secrets.SFTP_HOST }}
+          host:     ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          local_path:  '${{ env.LOCAL_PATH }}'
-          remote_path: '${{ env.API_REMOTE_PATH }}'
-          sftp_only: true
-          exclude: |
-            .git*
-            .github*
-            node_modules
-            storage/logs
+          source:   '${{ env.CHANGED_FILES }}'
+          target:   '${{ env.API_REMOTE_PATH }}'
+          overwrite: true
 
-      # 🛠 تشغيل migrate + seed + clear cache على الاثنين
+      # 🛠 تشغيل migrate + seed + clear cache فقط لو فيه تغييرات
       - name: Run Migrations & Seeders & Clear Cache (Admin & API)
-        uses: appleboy/ssh-action@v1.0.0
+        if: env.HAS_CHANGES == 'true'
+        uses: appleboy/ssh-action@v1
         with:
           host:     ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
@@ -128,7 +164,9 @@ jobs:
         if: always()
         run: |
           echo "📌 Job status: ${{ job.status }}"
+          echo "HAS_CHANGES=$HAS_CHANGES"
+          echo "CHANGED_FILES=$CHANGED_FILES"
           echo "📁 Admin path: ${ADMIN_REMOTE_PATH}/"
           echo "📁 API   path: ${API_REMOTE_PATH}/"
-          echo "🗄️ Full project deployed to both paths"
-          echo "🧹 Migrations & cache cleared for both (if artisan exists)"
+          echo "🗄️ Only changed files were copied to both paths"
+          echo "🧹 Migrations & cache cleared only when there were changes"
