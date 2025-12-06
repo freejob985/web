@@ -10,10 +10,13 @@ on:
   workflow_dispatch:
 
 env:
-  ADMIN_LOCAL_PATH: ./admin
-  API_LOCAL_PATH: ./api
-  ADMIN_REMOTE_PATH: public_html/adminxd
-  API_REMOTE_PATH: public_html/ad
+  # مسارات داخل الريبو (على GitHub Runner)
+  ADMIN_LOCAL_PATH: admin
+  API_LOCAL_PATH: api
+
+  # مسارات كاملة على السيرفر (تنتهي عند adminxd و ad فقط)
+  ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
+  API_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/ad
 
 jobs:
   deploy:
@@ -23,6 +26,15 @@ jobs:
     steps:
       - name: 🔄 Checkout Code
         uses: actions/checkout@v4
+
+      - name: 🔍 List project structure (debug)
+        run: |
+          pwd
+          ls
+          echo "----"
+          ls admin || echo "admin folder NOT found"
+          echo "----"
+          ls api || echo "api folder NOT found"
 
       - name: 🧾 Show Git Info (debug)
         run: |
@@ -36,7 +48,9 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local_path: '${{ env.ADMIN_LOCAL_PATH }}/*'
+          # هذا فولدر admin داخل الريبو على GitHub، ليس على السيرفر
+          local_path: '${{ env.ADMIN_LOCAL_PATH }}'
+          # هذا مسار كامل على السيرفر وينتهي بـ adminxd فقط
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
 
@@ -47,7 +61,7 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local_path: '${{ env.API_LOCAL_PATH }}/*'
+          local_path: '${{ env.API_LOCAL_PATH }}'
           remote_path: '${{ env.API_REMOTE_PATH }}'
           sftp_only: true
 
@@ -55,7 +69,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{ secrets.SSH_USERNAME }}     # لو نفسه بتاع SFTP ممكن تستخدم نفس السيكرت
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
           script_stop: true
@@ -63,6 +77,7 @@ jobs:
             set -euo pipefail
 
             echo "🚀 Starting database operations..."
+            # ندخل على جذر مشروع لارافيل: public_html/adminxd
             cd "${ADMIN_REMOTE_PATH}"
 
             echo "🧪 PHP version:"
@@ -72,15 +87,15 @@ jobs:
             php artisan --version || true
 
             echo "📦 Running migrations..."
-            php artisan migrate --force --no-interaction 2>&1 | tee storage/logs/ci_migrate.log
+            php artisan migrate --force --no-interaction
 
             echo "🌱 Running seeders..."
-            php artisan db:seed --force --no-interaction 2>&1 | tee storage/logs/ci_seed.log
+            php artisan db:seed --force --no-interaction
 
             echo "🎉 Migrations and seeders finished."
 
-            echo "::group::Last 100 lines from laravel.log"
-            tail -n 100 storage/logs/laravel.log || echo "No laravel.log found"
+            echo "::group::Last 80 lines from laravel.log"
+            tail -n 80 storage/logs/laravel.log || echo "No laravel.log found"
             echo "::endgroup::"
 
       - name: 🧹 Clear Laravel Cache
@@ -100,16 +115,6 @@ jobs:
             php artisan route:clear
             php artisan view:clear
             echo "✅ Cache cleared successfully"
-
-      - name: 📦 Upload Laravel Logs (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: laravel-logs
-          path: |
-            admin/storage/logs/*.log
-            admin/storage/logs/ci_*.log
-          if-no-files-found: ignore
 
       - name: 📊 Deployment Summary
         if: always()
