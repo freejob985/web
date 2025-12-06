@@ -1,4 +1,4 @@
-name: Deploy Admin (Laravel) to adminxd
+name: Deploy Admin (Laravel)
 
 on:
   push:
@@ -7,7 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  # مسار مشروع لارفيل على السيرفر
+  # الكود موجود في جذر الريبو
+  ADMIN_LOCAL_PATH: .
+  # مسار مشروع الأدمن على السيرفر (كما في لوحة الاستضافة)
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
 
 jobs:
@@ -16,70 +18,83 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: 🔄 Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🔍 Debug – list repo content
+      - name: Debug – list project files
         run: |
           echo "Current path:"
           pwd
-          echo "Repo content:"
+          echo "Repo contents:"
           ls -la
 
-      - name: 📂 Deploy Admin Files via SFTP
+      # ✅ التأكد من ربط الـ secrets بشكل صحيح
+      - name: Validate required secrets
+        env:
+          HOST: ${{ secrets.SFTP_HOST }}
+          USER: ${{ secrets.SFTP_USERNAME }}
+          PASS: ${{ secrets.SFTP_PASSWORD }}
+          PORT: ${{ secrets.SFTP_PORT }}
+        run: |
+          for var in HOST USER PASS PORT; do
+            if [ -z "${!var}" ]; then
+              echo "::error file=.github/workflows/deploy-admin.yml,line=40::Secret $var is empty or missing."
+              exit 1
+            fi
+          done
+          echo "✅ All required secrets are set (HOST, USER, PASS, PORT)."
+
+      # 🔼 نشر ملفات الأدمن عبر SFTP باستخدام نفس الـ secrets
+      - name: Deploy Admin Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server:   ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          # 👈 أهم تعديل: نرفع كل محتوى الريبو، لأنه لا يوجد فولدر admin
-          local_path: '.'
+          local_path:  '${{ env.ADMIN_LOCAL_PATH }}'
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
 
-      - name: 🛠 Run Database Migrations & Seeders
-        uses: appleboy/ssh-action@master
+      # 🛠 تشغيل الـ migrations والـ seeders عبر SSH بنفس بيانات SFTP
+      - name: Run Database Migrations & Seeders
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host:     ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          script_stop: true
           script: |
-            set -euo pipefail
+            set -e
 
-            echo "🚀 Starting database operations..."
+            echo "🚀 Connected. Starting database operations..."
             cd "${ADMIN_REMOTE_PATH}"
 
-            echo "🧪 PHP version:"
+            echo "PHP version:"
             php -v || true
 
-            echo "🧪 Artisan version:"
+            echo "Artisan version:"
             php artisan --version || true
 
             echo "📦 Running migrations..."
             php artisan migrate --force --no-interaction
 
             echo "🌱 Running seeders..."
-            php artisan db:seed --force --no-interaction
+            php artisan db:seed --force --no-interaction || echo "⚠️ Seeders failed or not configured"
 
-            echo "🎉 Migrations and seeders finished."
-
-            echo "::group::Last 80 lines from laravel.log"
+            echo "🧾 Last 80 lines from laravel.log (if exists):"
             tail -n 80 storage/logs/laravel.log || echo "No laravel.log found"
-            echo "::endgroup::"
 
-      - name: 🧹 Clear Laravel Cache
-        uses: appleboy/ssh-action@master
+      # 🧹 مسح الكاش بعد التحديث
+      - name: Clear Laravel Cache
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host:     ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          script_stop: true
           script: |
-            set -euo pipefail
+            set -e
             echo "🧹 Clearing cache..."
             cd "${ADMIN_REMOTE_PATH}"
             php artisan cache:clear
@@ -88,10 +103,10 @@ jobs:
             php artisan view:clear
             echo "✅ Cache cleared successfully"
 
-      - name: 📊 Deployment Summary
+      - name: Deployment Summary
         if: always()
         run: |
           echo "📌 Job status: ${{ job.status }}"
-          echo "📁 Admin deployed to → ${{ env.ADMIN_REMOTE_PATH }}/"
-          echo "🗄️ Migrations & seeders executed"
-          echo "🧹 Cache cleared"
+          echo "📁 Admin deployed to: ${ADMIN_REMOTE_PATH}/"
+          echo "🗄️ Migrations & seeders step executed"
+          echo "🧹 Cache clear step executed"
