@@ -1,22 +1,14 @@
-name: Deploy & Sync Files
+name: Deploy Admin (Laravel) to adminxd
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'admin/**'
-      - 'api/**'
   workflow_dispatch:
 
 env:
-  # مسارات داخل الريبو (على GitHub Runner)
-  ADMIN_LOCAL_PATH: admin
-  API_LOCAL_PATH: api
-
-  # مسارات كاملة على السيرفر (تنتهي عند adminxd و ad فقط)
+  # مسار مشروع لارفيل على السيرفر
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
-  API_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/ad
 
 jobs:
   deploy:
@@ -27,57 +19,37 @@ jobs:
       - name: 🔄 Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🔍 List project structure (debug)
+      - name: 🔍 Debug – list repo content
         run: |
+          echo "Current path:"
           pwd
-          ls
-          echo "----"
-          ls admin || echo "admin folder NOT found"
-          echo "----"
-          ls api || echo "api folder NOT found"
-
-      - name: 🧾 Show Git Info (debug)
-        run: |
-          echo "Current branch: $GITHUB_REF"
-          git log -1 --oneline
+          echo "Repo content:"
+          ls -la
 
       - name: 📂 Deploy Admin Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          server: ${{ secrets.SFTP_HOST }}
+          server:   ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          # هذا فولدر admin داخل الريبو على GitHub، ليس على السيرفر
-          local_path: '${{ env.ADMIN_LOCAL_PATH }}'
-          # هذا مسار كامل على السيرفر وينتهي بـ adminxd فقط
+          port:     ${{ secrets.SFTP_PORT }}
+          # 👈 أهم تعديل: نرفع كل محتوى الريبو، لأنه لا يوجد فولدر admin
+          local_path: '.'
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
-          sftp_only: true
-
-      - name: 📂 Deploy API Files via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          local_path: '${{ env.API_LOCAL_PATH }}'
-          remote_path: '${{ env.API_REMOTE_PATH }}'
           sftp_only: true
 
       - name: 🛠 Run Database Migrations & Seeders
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}     # لو نفسه بتاع SFTP ممكن تستخدم نفس السيكرت
+          host:     ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
+          port:     ${{ secrets.SFTP_PORT }}
           script_stop: true
           script: |
             set -euo pipefail
 
             echo "🚀 Starting database operations..."
-            # ندخل على جذر مشروع لارافيل: public_html/adminxd
             cd "${ADMIN_REMOTE_PATH}"
 
             echo "🧪 PHP version:"
@@ -101,10 +73,10 @@ jobs:
       - name: 🧹 Clear Laravel Cache
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SFTP_HOST }}
+          host:     ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
+          port:     ${{ secrets.SFTP_PORT }}
           script_stop: true
           script: |
             set -euo pipefail
@@ -120,7 +92,6 @@ jobs:
         if: always()
         run: |
           echo "📌 Job status: ${{ job.status }}"
-          echo "📁 Admin files → ${{ env.ADMIN_REMOTE_PATH }}/"
-          echo "📁 API files → ${{ env.API_REMOTE_PATH }}/"
-          echo "🗄️ Database migrations & seeders executed on server"
-          echo "🧹 Laravel cache cleared"
+          echo "📁 Admin deployed to → ${{ env.ADMIN_REMOTE_PATH }}/"
+          echo "🗄️ Migrations & seeders executed"
+          echo "🧹 Cache cleared"
