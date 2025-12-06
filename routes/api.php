@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PdfController;
 //تطويرات في ملفات
+
+
+
 Route::prefix('v1')->group(function () {
     Route::get('/ping', fn () => response()->json(['message' => 'ok']))->name('api.ping');
 
