@@ -1,16 +1,23 @@
-name: Deploy Admin (Laravel)
+name: Deploy Admin & API (Laravel)
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'adminxd/**'
+      - 'ad/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
-  # الكود في جذر الريبو
-  ADMIN_LOCAL_PATH: .
-  # هذا يُستخدم فقط في خطوة الـ SFTP (على GitHub)
+  # فولدرات المشروع داخل الريبو
+  ADMIN_LOCAL_PATH: adminxd
+  API_LOCAL_PATH: ad
+
+  # مسارات المشاريع على السيرفر
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
+  API_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/ad
 
 jobs:
   deploy:
@@ -21,14 +28,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Debug – list project files (local)
+      - name: Debug – list project folders (local)
         run: |
-          echo "Local repo path:"
+          echo "Repo root:"
           pwd
-          echo "Repo contents:"
+          echo "Top-level folders:"
           ls -la
 
-      # ✅ التحقق من وجود الـ secrets الأربعة
+      # ✅ تأكيد ربط الـ secrets
       - name: Validate required secrets
         env:
           HOST: ${{ secrets.SFTP_HOST }}
@@ -38,13 +45,13 @@ jobs:
         run: |
           for var in HOST USER PASS PORT; do
             if [ -z "${!var}" ]; then
-              echo "::error file=.github/workflows/deploy-admin.yml,line=40::Secret $var is empty or missing."
+              echo "::error file=.github/workflows/deploy-admin-api.yml,line=40::Secret $var is empty or missing."
               exit 1
             fi
           done
           echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      # 📤 رفع ملفات الأدمن إلى السيرفر
+      # 📤 نشر ملفات الأدمن فقط (فولدر adminxd)
       - name: Deploy Admin Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -55,9 +62,29 @@ jobs:
           local_path:  '${{ env.ADMIN_LOCAL_PATH }}'
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
+          exclude: |
+            .git*
+            .github*
+            node_modules
 
-      # 🛠 تشغيل الـ migrations و الـ seeders
-      - name: Run Database Migrations & Seeders
+      # 📤 نشر ملفات الـ API فقط (فولدر ad)
+      - name: Deploy API Files via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server:   ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port:     ${{ secrets.SFTP_PORT }}
+          local_path:  '${{ env.API_LOCAL_PATH }}'
+          remote_path: '${{ env.API_REMOTE_PATH }}'
+          sftp_only: true
+          exclude: |
+            .git*
+            .github*
+            node_modules
+
+      # 🛠 تشغيل migrations + seed + clear cache على المسارين (adminxd + ad)
+      - name: Run Migrations & Seeders & Clear Cache (Admin & API)
         uses: appleboy/ssh-action@v1.0.0
         with:
           host:     ${{ secrets.SFTP_HOST }}
@@ -67,57 +94,46 @@ jobs:
           script: |
             set -e
 
-            # 👇 مسار مشروع Laravel على السيرفر (صريح، لا نعتمد على متغيّر خارجي)
-            REMOTE_PATH="/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd"
+            ADMIN_REMOTE_PATH="${{ env.ADMIN_REMOTE_PATH }}"
+            API_REMOTE_PATH="${{ env.API_REMOTE_PATH }}"
 
-            echo "🚀 Connected. Starting database operations..."
-            cd "$REMOTE_PATH"
+            for APP_PATH in "$ADMIN_REMOTE_PATH" "$API_REMOTE_PATH"; do
+              echo "========================================"
+              echo "🔍 Processing app at: $APP_PATH"
 
-            echo "Current remote path:"
-            pwd
-            echo "Remote contents (top level):"
-            ls
+              if [ ! -f "$APP_PATH/artisan" ]; then
+                echo "⚠️ Skipping $APP_PATH (artisan not found)"
+                continue
+              fi
 
-            echo "PHP version:"
-            php -v || true
+              cd "$APP_PATH"
 
-            echo "Artisan version:"
-            php artisan --version || echo "⚠️ Could not run 'php artisan --version'"
+              echo "📁 Current path:"
+              pwd
 
-            echo "📦 Running migrations..."
-            php artisan migrate --force --no-interaction || echo "⚠️ migrate command failed"
+              echo "🧪 Artisan version:"
+              php artisan --version || true
 
-            echo "🌱 Running seeders..."
-            php artisan db:seed --force --no-interaction || echo "⚠️ Seeders failed or not configured"
+              echo "📦 Running migrations..."
+              php artisan migrate --force --no-interaction || echo "⚠️ migrate failed for $APP_PATH"
 
-            echo "🧾 Last 80 lines from laravel.log (if exists):"
-            tail -n 80 storage/logs/laravel.log || echo "No laravel.log found"
+              echo "🌱 Running seeders..."
+              php artisan db:seed --force --no-interaction || echo "⚠️ seeders failed for $APP_PATH"
 
-      # 🧹 مسح كاش Laravel
-      - name: Clear Laravel Cache
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host:     ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port:     ${{ secrets.SFTP_PORT }}
-          script: |
-            set -e
+              echo "🧹 Clearing cache..."
+              php artisan cache:clear
+              php artisan config:clear
+              php artisan route:clear
+              php artisan view:clear
 
-            REMOTE_PATH="/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd"
-
-            echo "🧹 Clearing cache..."
-            cd "$REMOTE_PATH"
-            php artisan cache:clear
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
-            echo "✅ Cache cleared successfully"
+              echo "✅ Done for $APP_PATH"
+            done
 
       - name: Deployment Summary
         if: always()
         run: |
           echo "📌 Job status: ${{ job.status }}"
           echo "📁 Admin deployed to: ${ADMIN_REMOTE_PATH}/"
-          echo "🗄️ Migrations & seeders step executed"
-          echo "🧹 Cache clear step executed"
+          echo "📁 API   deployed to: ${API_REMOTE_PATH}/"
+          echo "🗄️ Migrations & seeders executed (where artisan exists)"
+          echo "🧹 Cache cleared (where artisan exists)"
