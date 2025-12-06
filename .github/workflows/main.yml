@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
 
 env:
-  # مسارات المشاريع على السيرفر
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
   API_REMOTE_PATH:   /home/u929533639/domains/eliteonegrocery.com/public_html/ad
   DEPLOY_DIR: deploy
@@ -21,7 +20,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2   # عشان نقدر نجيب الكوميت اللي قبل الحالي
+          fetch-depth: 2   # حتى نستطيع المقارنة مع الكوميت السابق
 
       - name: Debug – list repo root
         run: |
@@ -29,7 +28,6 @@ jobs:
           pwd
           ls -la
 
-      # ✅ تأكيد وجود بيانات الاتصال
       - name: Validate required secrets
         env:
           HOST: ${{ secrets.SFTP_HOST }}
@@ -39,13 +37,13 @@ jobs:
         run: |
           for var in HOST USER PASS PORT; do
             if [ -z "${!var}" ]; then
-              echo "::error file=.github/workflows/deploy.yml,line=32::Secret $var is empty or missing."
+              echo "::error file=.github/workflows/deploy.yml,line=30::Secret $var is empty or missing."
               exit 1
             fi
           done
           echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      # 🧠 تجهيز فولدر deploy يحتوي الملفات المتغيّرة فقط
+      # ✅ الإصلاح هنا
       - name: Prepare changed files folder
         id: prepare
         run: |
@@ -56,31 +54,26 @@ jobs:
           mkdir -p "$DEPLOY_DIR"
 
           echo "🔍 Detecting changed files..."
-          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            # لو ده مش أول كوميت
-            if git rev-parse HEAD^ >/dev/null 2>&1; then
-              CHANGED_FILES=$(git diff --name-only HEAD^ HEAD || echo "")
-            else
-              # أول كوميت → اعتبر كل الملفات متغيرة
-              CHANGED_FILES=$(git ls-files)
-            fi
+
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] && git rev-parse HEAD^ >/dev/null 2>&1; then
+            CHANGED_FILES=$(git diff --name-only HEAD^ HEAD || echo "")
           else
-            # تشغيل يدوي workflow_dispatch → اعتبر كل الملفات متغيرة
+            # أول كوميت أو تشغيل يدوي → اعتبر كل الملفات متغيرة
             CHANGED_FILES=$(git ls-files)
           fi
 
           echo "Changed files list:"
           echo "$CHANGED_FILES"
 
-          COUNT=0
+          CHANGED_COUNT=0
 
-          # نسخ الملفات المتغيرة فقط إلى deploy/ مع الحفاظ على نفس التركيب
-          echo "$CHANGED_FILES" | while read file; do
+          # نستخدم for بدلاً من while لتجنّب مشكلة الـ subshell
+          for file in $CHANGED_FILES; do
             [ -z "$file" ] && continue
 
-            # استبعاد أشياء لا نحتاج رفعها
             case "$file" in
               .git/*|.github/*|node_modules/*|vendor/*|storage/logs/*)
+                # استبعاد الملفات غير المهمة للنشر
                 continue
                 ;;
             esac
@@ -89,23 +82,20 @@ jobs:
               mkdir -p "$DEPLOY_DIR/$(dirname "$file")"
               cp "$file" "$DEPLOY_DIR/$file"
               echo "➕ copied: $file"
-              COUNT=$((COUNT+1))
+              CHANGED_COUNT=$((CHANGED_COUNT+1))
             fi
           done
 
-          # نكتب عدد الملفات في ملف مؤقت لأن while subshell
-          echo "$COUNT" > /tmp/changed_count.txt
-
-          CHANGED_COUNT=$(cat /tmp/changed_count.txt)
           if [ "$CHANGED_COUNT" -eq 0 ]; then
             echo "ℹ️ No changed files to deploy."
             echo "HAS_CHANGES=false" >> $GITHUB_ENV
           else
             echo "✅ Total changed files to deploy: $CHANGED_COUNT"
             echo "HAS_CHANGES=true" >> $GITHUB_ENV
+            echo "📂 Deploy dir contents:"
+            ls -R "$DEPLOY_DIR"
           fi
 
-      # ⬆️ نشر الملفات المتغيّرة فقط إلى adminxd
       - name: Deploy changed files to Admin (adminxd)
         if: env.HAS_CHANGES == 'true'
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
@@ -114,12 +104,10 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          # هنا نرفع من فولدر deploy فقط
           local_path:  './${{ env.DEPLOY_DIR }}'
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
 
-      # ⬆️ نشر نفس الملفات المتغيّرة إلى ad
       - name: Deploy changed files to API (ad)
         if: env.HAS_CHANGES == 'true'
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
@@ -132,7 +120,6 @@ jobs:
           remote_path: '${{ env.API_REMOTE_PATH }}'
           sftp_only: true
 
-      # 🛠 تشغيل migrate + seed + clear cache على المسارين (adminxd + ad)
       - name: Run Migrations & Seeders & Clear Cache (Admin & API)
         if: env.HAS_CHANGES == 'true'
         uses: appleboy/ssh-action@v1.0.0
