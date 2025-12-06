@@ -4,20 +4,15 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'adminxd/**'
-      - 'ad/**'
-      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
-  # فولدرات المشروع داخل الريبو
-  ADMIN_LOCAL_PATH: adminxd
-  API_LOCAL_PATH: ad
+  # ✔ الكود موجود في جذر الريبو (app, artisan, routes, ...)
+  LOCAL_PATH: .
 
-  # مسارات المشاريع على السيرفر
+  # ✔ مسارات المشاريع على السيرفر (الفولدرين الموجودين في الاستضافة)
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
-  API_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/ad
+  API_REMOTE_PATH:   /home/u929533639/domains/eliteonegrocery.com/public_html/ad
 
 jobs:
   deploy:
@@ -28,14 +23,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Debug – list project folders (local)
+      - name: Debug – list repo root
         run: |
           echo "Repo root:"
           pwd
-          echo "Top-level folders:"
+          echo "Top-level contents:"
           ls -la
 
-      # ✅ تأكيد ربط الـ secrets
+      # ✅ تأكيد وجود الـ secrets (SFTP_HOST / SFTP_USERNAME / SFTP_PASSWORD / SFTP_PORT)
       - name: Validate required secrets
         env:
           HOST: ${{ secrets.SFTP_HOST }}
@@ -45,13 +40,13 @@ jobs:
         run: |
           for var in HOST USER PASS PORT; do
             if [ -z "${!var}" ]; then
-              echo "::error file=.github/workflows/deploy-admin-api.yml,line=40::Secret $var is empty or missing."
+              echo "::error file=.github/workflows/main.yml,line=32::Secret $var is empty or missing."
               exit 1
             fi
           done
           echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      # 📤 نشر ملفات الأدمن فقط (فولدر adminxd)
+      # 📤 نشر المشروع إلى مسار الأدمن على السيرفر
       - name: Deploy Admin Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -59,15 +54,19 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          local_path:  '${{ env.ADMIN_LOCAL_PATH }}'
+          # 👇 من جذر الريبو (لا يوجد adminxd محليًا)
+          local_path:  '${{ env.LOCAL_PATH }}'
+          # 👇 إلى فولدر الأدمن على السيرفر
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
           exclude: |
             .git*
             .github*
             node_modules
+            vendor
+            storage/logs
 
-      # 📤 نشر ملفات الـ API فقط (فولدر ad)
+      # 📤 نشر نفس الكود إلى مسار الـ API على السيرفر
       - name: Deploy API Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -75,13 +74,15 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          local_path:  '${{ env.API_LOCAL_PATH }}'
+          local_path:  '${{ env.LOCAL_PATH }}'
           remote_path: '${{ env.API_REMOTE_PATH }}'
           sftp_only: true
           exclude: |
             .git*
             .github*
             node_modules
+            vendor
+            storage/logs
 
       # 🛠 تشغيل migrations + seed + clear cache على المسارين (adminxd + ad)
       - name: Run Migrations & Seeders & Clear Cache (Admin & API)
