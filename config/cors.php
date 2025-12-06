@@ -20,10 +20,18 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        // Production domains - eliteonegrocery.com
+        'https://eliteonegrocery.com',
+        'https://www.eliteonegrocery.com',
+        'https://adminxd.eliteonegrocery.com',
+        
+        // Legacy domains - engeb.com
         'http://engeb.com',
         'https://engeb.com',
         'https://www.engeb.com',
         'https://admin.engeb.com',
+        
+        // Development/Testing - Local servers
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:5175',
