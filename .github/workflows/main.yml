@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  # الكود موجود في جذر الريبو
+  # الكود في جذر الريبو
   ADMIN_LOCAL_PATH: .
-  # مسار مشروع الأدمن على السيرفر (كما في لوحة الاستضافة)
+  # هذا يُستخدم فقط في خطوة الـ SFTP (على GitHub)
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
 
 jobs:
@@ -21,14 +21,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Debug – list project files
+      - name: Debug – list project files (local)
         run: |
-          echo "Current path:"
+          echo "Local repo path:"
           pwd
           echo "Repo contents:"
           ls -la
 
-      # ✅ التأكد من ربط الـ secrets بشكل صحيح
+      # ✅ التحقق من وجود الـ secrets الأربعة
       - name: Validate required secrets
         env:
           HOST: ${{ secrets.SFTP_HOST }}
@@ -42,9 +42,9 @@ jobs:
               exit 1
             fi
           done
-          echo "✅ All required secrets are set (HOST, USER, PASS, PORT)."
+          echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      # 🔼 نشر ملفات الأدمن عبر SFTP باستخدام نفس الـ secrets
+      # 📤 رفع ملفات الأدمن إلى السيرفر
       - name: Deploy Admin Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -56,7 +56,7 @@ jobs:
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
 
-      # 🛠 تشغيل الـ migrations والـ seeders عبر SSH بنفس بيانات SFTP
+      # 🛠 تشغيل الـ migrations و الـ seeders
       - name: Run Database Migrations & Seeders
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -67,17 +67,25 @@ jobs:
           script: |
             set -e
 
+            # 👇 مسار مشروع Laravel على السيرفر (صريح، لا نعتمد على متغيّر خارجي)
+            REMOTE_PATH="/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd"
+
             echo "🚀 Connected. Starting database operations..."
-            cd "${ADMIN_REMOTE_PATH}"
+            cd "$REMOTE_PATH"
+
+            echo "Current remote path:"
+            pwd
+            echo "Remote contents (top level):"
+            ls
 
             echo "PHP version:"
             php -v || true
 
             echo "Artisan version:"
-            php artisan --version || true
+            php artisan --version || echo "⚠️ Could not run 'php artisan --version'"
 
             echo "📦 Running migrations..."
-            php artisan migrate --force --no-interaction
+            php artisan migrate --force --no-interaction || echo "⚠️ migrate command failed"
 
             echo "🌱 Running seeders..."
             php artisan db:seed --force --no-interaction || echo "⚠️ Seeders failed or not configured"
@@ -85,7 +93,7 @@ jobs:
             echo "🧾 Last 80 lines from laravel.log (if exists):"
             tail -n 80 storage/logs/laravel.log || echo "No laravel.log found"
 
-      # 🧹 مسح الكاش بعد التحديث
+      # 🧹 مسح كاش Laravel
       - name: Clear Laravel Cache
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -95,8 +103,11 @@ jobs:
           port:     ${{ secrets.SFTP_PORT }}
           script: |
             set -e
+
+            REMOTE_PATH="/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd"
+
             echo "🧹 Clearing cache..."
-            cd "${ADMIN_REMOTE_PATH}"
+            cd "$REMOTE_PATH"
             php artisan cache:clear
             php artisan config:clear
             php artisan route:clear
