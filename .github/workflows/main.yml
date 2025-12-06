@@ -12,8 +12,8 @@ on:
 env:
   ADMIN_LOCAL_PATH: ./admin
   API_LOCAL_PATH: ./api
-  ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
-  API_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/ad
+  ADMIN_REMOTE_PATH: public_html/adminxd
+  API_REMOTE_PATH: public_html/ad
 
 jobs:
   deploy:
@@ -55,7 +55,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}      # يفضّل فصل SSH عن SFTP لو مختلفين
+          username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
           script_stop: true
