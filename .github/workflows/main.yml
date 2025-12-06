@@ -24,10 +24,9 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local_path: ./admin/
-          remote_path: ./adminxd/
+          uploads: |
+            ./admin/ => /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd/
           delete: false
-          sftp_only: true
 
       - name: Deploy API Files via SFTP
         uses: Dylan700/sftp-upload-action@latest
@@ -36,10 +35,9 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local_path: ./api/
-          remote_path: ./ad/
+          uploads: |
+            ./api/ => /home/u929533639/domains/eliteonegrocery.com/public_html/ad/
           delete: false
-          sftp_only: true
 
       - name: Run Database Migrations & Seeders
         uses: appleboy/ssh-action@master
@@ -51,8 +49,8 @@ jobs:
           script: |
             echo "🚀 Starting database operations..."
             
-            # اختر المسار الذي سيتم تنفيذ الأوامر منه (admin أو api)
-            cd ~/adminxd
+            # التنفيذ من مسار adminxd
+            cd /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
             
             echo "📦 Running migrations..."
             php artisan migrate --force
@@ -84,7 +82,7 @@ jobs:
           port: ${{ secrets.SFTP_PORT }}
           script: |
             echo "🧹 Clearing cache..."
-            cd ~/adminxd
+            cd /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
             php artisan cache:clear
             php artisan config:clear
             php artisan route:clear
@@ -94,7 +92,8 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "✅ Deployment completed successfully!"
-          echo "📁 Files synced to server"
+          echo "📁 Admin files → /public_html/adminxd/"
+          echo "📁 API files → /public_html/ad/"
           echo "🗄️ Database migrations executed"
           echo "🌱 Database seeders executed"
           echo "🧹 Cache cleared"
