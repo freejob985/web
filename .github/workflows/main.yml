@@ -1,0 +1,100 @@
+name: Deploy & Sync Files
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'admin/**'
+      - 'api/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy Admin Files via SFTP
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          local_path: ./admin/
+          remote_path: ./adminxd/
+          delete: false
+          sftp_only: true
+
+      - name: Deploy API Files via SFTP
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          local_path: ./api/
+          remote_path: ./ad/
+          delete: false
+          sftp_only: true
+
+      - name: Run Database Migrations & Seeders
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          script: |
+            echo "🚀 Starting database operations..."
+            
+            # اختر المسار الذي سيتم تنفيذ الأوامر منه (admin أو api)
+            cd ~/adminxd
+            
+            echo "📦 Running migrations..."
+            php artisan migrate --force
+            
+            if [ $? -eq 0 ]; then
+              echo "✅ Migrations completed successfully"
+            else
+              echo "❌ Migrations failed"
+              exit 1
+            fi
+            
+            echo "🌱 Running seeders..."
+            php artisan db:seed --force
+            
+            if [ $? -eq 0 ]; then
+              echo "✅ Seeders completed successfully"
+            else
+              echo "⚠️ Seeders failed or no seeders found"
+            fi
+            
+            echo "🎉 All operations completed!"
+
+      - name: Clear Cache
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          script: |
+            echo "🧹 Clearing cache..."
+            cd ~/adminxd
+            php artisan cache:clear
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            echo "✅ Cache cleared successfully"
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "📁 Files synced to server"
+          echo "🗄️ Database migrations executed"
+          echo "🌱 Database seeders executed"
+          echo "🧹 Cache cleared"
