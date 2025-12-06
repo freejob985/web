@@ -1,90 +1,113 @@
-name: Deploy & Sync Files
+name: Deploy Admin (Laravel)
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'admin/**'
-      - 'api/**'
   workflow_dispatch:
+
+env:
+  # الكود في جذر الريبو
+  ADMIN_LOCAL_PATH: .
+  # هذا يُستخدم فقط في خطوة الـ SFTP (على GitHub)
+  ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Deploy Admin Files via SFTP
-        uses: Dylan700/sftp-upload-action@latest
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          local_path: ./admin/
-          remote_path: ./adminxd/
-          delete: false
-          sftp_only: true
+      - name: Debug – list project files (local)
+        run: |
+          echo "Local repo path:"
+          pwd
+          echo "Repo contents:"
+          ls -la
 
-      - name: Deploy API Files via SFTP
-        uses: Dylan700/sftp-upload-action@latest
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          local_path: ./api/
-          remote_path: ./ad/
-          delete: false
-          sftp_only: true
-
-      - name: Run Database Migrations & Seeders
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          script: |
-            echo "🚀 Starting database operations..."
-            
-            # اختر المسار الذي سيتم تنفيذ الأوامر منه (admin أو api)
-            cd ~/adminxd
-            
-            echo "📦 Running migrations..."
-            php artisan migrate --force
-            
-            if [ $? -eq 0 ]; then
-              echo "✅ Migrations completed successfully"
-            else
-              echo "❌ Migrations failed"
+      # ✅ التحقق من وجود الـ secrets الأربعة
+      - name: Validate required secrets
+        env:
+          HOST: ${{ secrets.SFTP_HOST }}
+          USER: ${{ secrets.SFTP_USERNAME }}
+          PASS: ${{ secrets.SFTP_PASSWORD }}
+          PORT: ${{ secrets.SFTP_PORT }}
+        run: |
+          for var in HOST USER PASS PORT; do
+            if [ -z "${!var}" ]; then
+              echo "::error file=.github/workflows/deploy-admin.yml,line=40::Secret $var is empty or missing."
               exit 1
             fi
-            
-            echo "🌱 Running seeders..."
-            php artisan db:seed --force
-            
-            if [ $? -eq 0 ]; then
-              echo "✅ Seeders completed successfully"
-            else
-              echo "⚠️ Seeders failed or no seeders found"
-            fi
-            
-            echo "🎉 All operations completed!"
+          done
+          echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      - name: Clear Cache
-        uses: appleboy/ssh-action@master
+      # 📤 رفع ملفات الأدمن إلى السيرفر
+      - name: Deploy Admin Files via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          host: ${{ secrets.SFTP_HOST }}
+          server:   ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
+          port:     ${{ secrets.SFTP_PORT }}
+          local_path:  '${{ env.ADMIN_LOCAL_PATH }}'
+          remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
+          sftp_only: true
+
+      # 🛠 تشغيل الـ migrations و الـ seeders
+      - name: Run Database Migrations & Seeders
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host:     ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port:     ${{ secrets.SFTP_PORT }}
           script: |
+            set -e
+
+            # 👇 مسار مشروع Laravel على السيرفر (صريح، لا نعتمد على متغيّر خارجي)
+            REMOTE_PATH="/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd"
+
+            echo "🚀 Connected. Starting database operations..."
+            cd "$REMOTE_PATH"
+
+            echo "Current remote path:"
+            pwd
+            echo "Remote contents (top level):"
+            ls
+
+            echo "PHP version:"
+            php -v || true
+
+            echo "Artisan version:"
+            php artisan --version || echo "⚠️ Could not run 'php artisan --version'"
+
+            echo "📦 Running migrations..."
+            php artisan migrate --force --no-interaction || echo "⚠️ migrate command failed"
+
+            echo "🌱 Running seeders..."
+            php artisan db:seed --force --no-interaction || echo "⚠️ Seeders failed or not configured"
+
+            echo "🧾 Last 80 lines from laravel.log (if exists):"
+            tail -n 80 storage/logs/laravel.log || echo "No laravel.log found"
+
+      # 🧹 مسح كاش Laravel
+      - name: Clear Laravel Cache
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host:     ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port:     ${{ secrets.SFTP_PORT }}
+          script: |
+            set -e
+
+            REMOTE_PATH="/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd"
+
             echo "🧹 Clearing cache..."
-            cd ~/adminxd
+            cd "$REMOTE_PATH"
             php artisan cache:clear
             php artisan config:clear
             php artisan route:clear
@@ -92,9 +115,9 @@ jobs:
             echo "✅ Cache cleared successfully"
 
       - name: Deployment Summary
+        if: always()
         run: |
-          echo "✅ Deployment completed successfully!"
-          echo "📁 Files synced to server"
-          echo "🗄️ Database migrations executed"
-          echo "🌱 Database seeders executed"
-          echo "🧹 Cache cleared"
+          echo "📌 Job status: ${{ job.status }}"
+          echo "📁 Admin deployed to: ${ADMIN_REMOTE_PATH}/"
+          echo "🗄️ Migrations & seeders step executed"
+          echo "🧹 Cache clear step executed"
