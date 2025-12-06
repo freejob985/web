@@ -15,6 +15,7 @@ class Offer extends Model
         'image',
         'original_price',
         'offer_price',
+        'new_price', // Database column name
         'discount_percentage',
         'discount_type',
         'buy_quantity',
@@ -97,11 +98,28 @@ class Offer extends Model
     }
 
     /**
+     * Get the offer price (accessor for new_price).
+     */
+    public function getOfferPriceAttribute()
+    {
+        return $this->attributes['new_price'] ?? $this->attributes['offer_price'] ?? null;
+    }
+    
+    /**
+     * Set the offer price (mutator for new_price).
+     */
+    public function setOfferPriceAttribute($value)
+    {
+        $this->attributes['new_price'] = $value;
+    }
+
+    /**
      * Get the discount amount.
      */
     public function getDiscountAmountAttribute()
     {
-        return $this->original_price - $this->offer_price;
+        $offerPrice = $this->offer_price ?? $this->new_price ?? 0;
+        return $this->original_price - $offerPrice;
     }
 
     /**
