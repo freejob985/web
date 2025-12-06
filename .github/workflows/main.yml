@@ -1,4 +1,4 @@
-name: Deploy Admin & API (changed files only)
+name: Deploy Admin & API (full overwrite)
 
 on:
   push:
@@ -7,9 +7,12 @@ on:
   workflow_dispatch:
 
 env:
+  # جذر المشروع في الريبو
+  LOCAL_PATH: .
+
+  # مسارات المشروعين على السيرفر
   ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
   API_REMOTE_PATH:   /home/u929533639/domains/eliteonegrocery.com/public_html/ad
-  DEPLOY_DIR: deploy
 
 jobs:
   deploy:
@@ -19,8 +22,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2   # حتى نستطيع المقارنة مع الكوميت السابق
 
       - name: Debug – list repo root
         run: |
@@ -43,85 +44,42 @@ jobs:
           done
           echo "✅ All required secrets (HOST, USER, PASS, PORT) are set."
 
-      # ✅ الإصلاح هنا
-      - name: Prepare changed files folder
-        id: prepare
-        run: |
-          set -e
-
-          DEPLOY_DIR="${{ env.DEPLOY_DIR }}"
-          rm -rf "$DEPLOY_DIR"
-          mkdir -p "$DEPLOY_DIR"
-
-          echo "🔍 Detecting changed files..."
-
-          if [ "${GITHUB_EVENT_NAME}" = "push" ] && git rev-parse HEAD^ >/dev/null 2>&1; then
-            CHANGED_FILES=$(git diff --name-only HEAD^ HEAD || echo "")
-          else
-            # أول كوميت أو تشغيل يدوي → اعتبر كل الملفات متغيرة
-            CHANGED_FILES=$(git ls-files)
-          fi
-
-          echo "Changed files list:"
-          echo "$CHANGED_FILES"
-
-          CHANGED_COUNT=0
-
-          # نستخدم for بدلاً من while لتجنّب مشكلة الـ subshell
-          for file in $CHANGED_FILES; do
-            [ -z "$file" ] && continue
-
-            case "$file" in
-              .git/*|.github/*|node_modules/*|vendor/*|storage/logs/*)
-                # استبعاد الملفات غير المهمة للنشر
-                continue
-                ;;
-            esac
-
-            if [ -f "$file" ]; then
-              mkdir -p "$DEPLOY_DIR/$(dirname "$file")"
-              cp "$file" "$DEPLOY_DIR/$file"
-              echo "➕ copied: $file"
-              CHANGED_COUNT=$((CHANGED_COUNT+1))
-            fi
-          done
-
-          if [ "$CHANGED_COUNT" -eq 0 ]; then
-            echo "ℹ️ No changed files to deploy."
-            echo "HAS_CHANGES=false" >> $GITHUB_ENV
-          else
-            echo "✅ Total changed files to deploy: $CHANGED_COUNT"
-            echo "HAS_CHANGES=true" >> $GITHUB_ENV
-            echo "📂 Deploy dir contents:"
-            ls -R "$DEPLOY_DIR"
-          fi
-
-      - name: Deploy changed files to Admin (adminxd)
-        if: env.HAS_CHANGES == 'true'
+      # ⬆️ نشر المشروع كاملًا إلى adminxd (تحديث مباشر للملفات)
+      - name: Deploy project to Admin (adminxd)
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server:   ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          local_path:  './${{ env.DEPLOY_DIR }}'
+          local_path:  '${{ env.LOCAL_PATH }}'
           remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
+          exclude: |
+            .git*
+            .github*
+            node_modules
+            storage/logs
 
-      - name: Deploy changed files to API (ad)
-        if: env.HAS_CHANGES == 'true'
+      # ⬆️ نشر نفس المشروع كاملًا إلى ad
+      - name: Deploy project to API (ad)
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server:   ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port:     ${{ secrets.SFTP_PORT }}
-          local_path:  './${{ env.DEPLOY_DIR }}'
+          local_path:  '${{ env.LOCAL_PATH }}'
           remote_path: '${{ env.API_REMOTE_PATH }}'
           sftp_only: true
+          exclude: |
+            .git*
+            .github*
+            node_modules
+            storage/logs
 
+      # 🛠 تشغيل migrate + seed + clear cache على الاثنين
       - name: Run Migrations & Seeders & Clear Cache (Admin & API)
-        if: env.HAS_CHANGES == 'true'
         uses: appleboy/ssh-action@v1.0.0
         with:
           host:     ${{ secrets.SFTP_HOST }}
@@ -170,8 +128,7 @@ jobs:
         if: always()
         run: |
           echo "📌 Job status: ${{ job.status }}"
-          echo "HAS_CHANGES=$HAS_CHANGES"
           echo "📁 Admin path: ${ADMIN_REMOTE_PATH}/"
           echo "📁 API   path: ${API_REMOTE_PATH}/"
-          echo "🗄️ Migrations & seeders executed only if there were changed files"
-          echo "🧹 Cache cleared only if there were changed files"
+          echo "🗄️ Full project deployed to both paths"
+          echo "🧹 Migrations & cache cleared for both (if artisan exists)"
