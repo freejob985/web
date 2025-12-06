@@ -9,91 +9,113 @@ on:
       - 'api/**'
   workflow_dispatch:
 
+env:
+  ADMIN_LOCAL_PATH: ./admin
+  API_LOCAL_PATH: ./api
+  ADMIN_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
+  API_REMOTE_PATH: /home/u929533639/domains/eliteonegrocery.com/public_html/ad
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: 🔄 Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Deploy Admin Files via SFTP
+      - name: 🧾 Show Git Info (debug)
+        run: |
+          echo "Current branch: $GITHUB_REF"
+          git log -1 --oneline
+
+      - name: 📂 Deploy Admin Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local_path: './admin/*'
-          remote_path: '/home/u929533639/domains/eliteonegrocery.com/public_html/adminxd'
+          local_path: '${{ env.ADMIN_LOCAL_PATH }}/*'
+          remote_path: '${{ env.ADMIN_REMOTE_PATH }}'
           sftp_only: true
 
-      - name: Deploy API Files via SFTP
+      - name: 📂 Deploy API Files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local_path: './api/*'
-          remote_path: '/home/u929533639/domains/eliteonegrocery.com/public_html/ad'
+          local_path: '${{ env.API_LOCAL_PATH }}/*'
+          remote_path: '${{ env.API_REMOTE_PATH }}'
           sftp_only: true
 
-      - name: Run Database Migrations & Seeders
+      - name: 🛠 Run Database Migrations & Seeders
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
+          username: ${{ secrets.SSH_USERNAME }}      # يفضّل فصل SSH عن SFTP لو مختلفين
+          password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
+          script_stop: true
           script: |
+            set -euo pipefail
+
             echo "🚀 Starting database operations..."
-            
-            # التنفيذ من مسار adminxd
-            cd /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
-            
-            echo "📦 Running migrations..."
-            php artisan migrate --force
-            
-            if [ $? -eq 0 ]; then
-              echo "✅ Migrations completed successfully"
-            else
-              echo "❌ Migrations failed"
-              exit 1
-            fi
-            
-            echo "🌱 Running seeders..."
-            php artisan db:seed --force
-            
-            if [ $? -eq 0 ]; then
-              echo "✅ Seeders completed successfully"
-            else
-              echo "⚠️ Seeders failed or no seeders found"
-            fi
-            
-            echo "🎉 All operations completed!"
+            cd "${ADMIN_REMOTE_PATH}"
 
-      - name: Clear Cache
+            echo "🧪 PHP version:"
+            php -v || true
+
+            echo "🧪 Artisan version:"
+            php artisan --version || true
+
+            echo "📦 Running migrations..."
+            php artisan migrate --force --no-interaction 2>&1 | tee storage/logs/ci_migrate.log
+
+            echo "🌱 Running seeders..."
+            php artisan db:seed --force --no-interaction 2>&1 | tee storage/logs/ci_seed.log
+
+            echo "🎉 Migrations and seeders finished."
+
+            echo "::group::Last 100 lines from laravel.log"
+            tail -n 100 storage/logs/laravel.log || echo "No laravel.log found"
+            echo "::endgroup::"
+
+      - name: 🧹 Clear Laravel Cache
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
+          script_stop: true
           script: |
+            set -euo pipefail
             echo "🧹 Clearing cache..."
-            cd /home/u929533639/domains/eliteonegrocery.com/public_html/adminxd
+            cd "${ADMIN_REMOTE_PATH}"
             php artisan cache:clear
             php artisan config:clear
             php artisan route:clear
             php artisan view:clear
             echo "✅ Cache cleared successfully"
 
-      - name: Deployment Summary
+      - name: 📦 Upload Laravel Logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: laravel-logs
+          path: |
+            admin/storage/logs/*.log
+            admin/storage/logs/ci_*.log
+          if-no-files-found: ignore
+
+      - name: 📊 Deployment Summary
+        if: always()
         run: |
-          echo "✅ Deployment completed successfully!"
-          echo "📁 Admin files → /public_html/adminxd/"
-          echo "📁 API files → /public_html/ad/"
-          echo "🗄️ Database migrations executed"
-          echo "🌱 Database seeders executed"
-          echo "🧹 Cache cleared"
+          echo "📌 Job status: ${{ job.status }}"
+          echo "📁 Admin files → ${{ env.ADMIN_REMOTE_PATH }}/"
+          echo "📁 API files → ${{ env.API_REMOTE_PATH }}/"
+          echo "🗄️ Database migrations & seeders executed on server"
+          echo "🧹 Laravel cache cleared"
